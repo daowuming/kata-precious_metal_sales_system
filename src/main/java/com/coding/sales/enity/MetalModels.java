@@ -1,13 +1,15 @@
 package com.coding.sales.enity;
 
+import java.math.BigDecimal;
+import java.util.List;
+
 public class MetalModels {
     String productName;
     String productNo;
-    String product;
     String unit;
-    String productPrice;
+    BigDecimal productPrice;
     String discountCards;
-    String fullReduction;
+   String fullReduction;
 
     public String getProductName() {
         return productName;
@@ -25,13 +27,6 @@ public class MetalModels {
         this.productNo = productNo;
     }
 
-    public String getProduct() {
-        return product;
-    }
-
-    public void setProduct(String product) {
-        this.product = product;
-    }
 
     public String getUnit() {
         return unit;
@@ -41,11 +36,11 @@ public class MetalModels {
         this.unit = unit;
     }
 
-    public String getProductPrice() {
+    public BigDecimal getProductPrice() {
         return productPrice;
     }
 
-    public void setProductPrice(String productPrice) {
+    public void setProductPrice(BigDecimal productPrice) {
         this.productPrice = productPrice;
     }
 
