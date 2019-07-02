@@ -46,7 +46,7 @@ public class OrderAppTest {
         return file.getAbsolutePath();
     }
     @Test
-    public void aaa() {
+    public void checkoutTest() {
         String orderCommand = FileUtils.readFromFile(getResourceFilePath(commandFileName));
         OrderApp app = new OrderApp();
         String actualResult = app.checkout(orderCommand);

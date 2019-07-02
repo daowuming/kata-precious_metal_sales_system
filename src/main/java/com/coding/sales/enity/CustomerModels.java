@@ -6,6 +6,7 @@ public class CustomerModels {
     String memberType;
     String memberNo;
 
+
     public String getMemberId() {
         return memberId;
     }

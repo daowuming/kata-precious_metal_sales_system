@@ -17,8 +17,8 @@ public class MetalService {
 
     static Map<String, Integer> discountMap = new HashMap<String, Integer>();
     static {
-        discountMap.put("nineDiscount",90);
-        discountMap.put("nineFiveDiscount",95);
+        discountMap.put("9折券",90);
+        discountMap.put("95折券",95);
     }
     List<MetalModels> metalList = new ArrayList<MetalModels>();
     {
@@ -52,14 +52,15 @@ public class MetalService {
         metalModel2.setProductName("2019北京世园会纪念银章大全40g");
         metalModel2.setProductPrice(BigDecimal.valueOf(1380.00));
         metalModel2.setUnit("盒");
-        metalModel2.setDiscountCards("nineDiscount");
+        metalModel2.setDiscountCards("9折券");
         metalList.add(metalModel2);
         MetalModels metalModel3 = new MetalModels();
         metalModel3.setProductNo("002001");
         metalModel3.setProductName("守扩之羽比翼双飞4.8g");
         metalModel3.setProductPrice(BigDecimal.valueOf(1080.00));
         metalModel3.setUnit("条");
-        metalModel3.setDiscountCards("nineFiveDiscount");
+        metalModel3.setDiscountCards("95折券");
+        metalModel3.setFullReduction("threePieces");
         metalList.add(metalModel3);
         MetalModels metalModel4 = new MetalModels();
         metalModel4.setProductNo("002002");
@@ -74,15 +75,15 @@ public class MetalService {
         metalModel5.setProductName("中国银象棋12g");
         metalModel5.setProductPrice(BigDecimal.valueOf(698.00));
         metalModel5.setUnit("套");
-        metalModel5.setDiscountCards("nineDiscount");
-        metalModel5.setFullReduction("two");
+        metalModel5.setDiscountCards("9折券");
+        metalModel5.setFullReduction("three");
         metalList.add(metalModel5);
         MetalModels metalModel6 = new MetalModels();
         metalModel6.setProductNo("003001");
         metalModel6.setProductName("招财进宝");
         metalModel6.setProductPrice(BigDecimal.valueOf(1580.00));
         metalModel6.setUnit("条");
-        metalModel6.setDiscountCards("nineFiveDiscount");
+        metalModel6.setDiscountCards("95折券");
         metalList.add(metalModel6);
         MetalModels metalModel7 = new MetalModels();
         metalModel7.setProductNo("003002");
@@ -90,6 +91,7 @@ public class MetalService {
         metalModel7.setProductPrice(BigDecimal.valueOf(980.00));
         metalModel7.setUnit("条");
         metalModel7.setDiscountCards("");
+        metalModel7.setFullReduction("threePieces");
         metalList.add(metalModel7);
     }
 
@@ -115,7 +117,7 @@ public class MetalService {
         OrderItemRepresentation orderItemRepresentation = new OrderItemRepresentation(productNo,metal.getProductName(),metal.getProductPrice(),amount,money);
         return orderItemRepresentation;
     }
-    public  List<DiscountItemRepresentation> getDiscountList (List<OrderItemCommand> orderItemCommand, ArrayList discount){
+    public  List<DiscountItemRepresentation> getDiscountList (List<OrderItemCommand> orderItemCommand, List<String> discount){
         List<DiscountItemRepresentation> discountList= new ArrayList<DiscountItemRepresentation>();
         for (OrderItemCommand item:orderItemCommand){
             DiscountItemRepresentation discountInfo =getDiscount(item.getProduct(),item.getAmount(),discount.get(0).toString());
@@ -130,7 +132,8 @@ public class MetalService {
         BigDecimal actualPayment1 = money;
 
         if (diacountType.equals(metal.getDiscountCards())){
-            actualPayment = money.multiply(BigDecimal.valueOf(discountMap.get(diacountType)));
+            actualPayment1 = money.multiply(BigDecimal.valueOf(discountMap.get(diacountType))).divide(BigDecimal.valueOf(100));
+            System.out.println("actualPayment1=="+actualPayment1);
         }
         OrderItemRepresentation orderItemRepresentation = new OrderItemRepresentation(productNo,metal.getProductName(),metal.getProductPrice(),amount,actualPayment);
         if (metal.getFullReduction()!=null){
@@ -153,13 +156,22 @@ public class MetalService {
                 if (someThousands>=1){
                     actualPayment=money.subtract(BigDecimal.valueOf(10*someThousands));
                 }
+            }else if (metal.getFullReduction().equals("threePieces")){
+                if (amount.compareTo(BigDecimal.valueOf(3))==0){
+                    actualPayment=money.multiply(BigDecimal.valueOf(2.5));
+                }else if (amount.compareTo(BigDecimal.valueOf(3))>0){
+                    actualPayment=metal.getProductPrice().multiply(amount.subtract(BigDecimal.valueOf(1)));
+                }
             }
         }
         actualPayment=getMinValue(actualPayment,actualPayment1);
-        DiscountItemRepresentation discountItemRepresentation = new DiscountItemRepresentation(productNo,metal.getProductName(),actualPayment);
+        BigDecimal discount = money.subtract(actualPayment);
+        System.out.println("actualPayment=="+actualPayment);
+        DiscountItemRepresentation discountItemRepresentation = new DiscountItemRepresentation(productNo,metal.getProductName(),actualPayment,discount);
         return discountItemRepresentation;
     }
     public BigDecimal getMinValue (BigDecimal valuea,BigDecimal valueb){
+        System.out.println("valuea=="+valuea+"===valueb==="+valueb);
         if (valuea.compareTo(valueb)>=0){
             return valueb;
         }else {

@@ -2,13 +2,18 @@ package com.coding.sales;
 
 import com.coding.sales.enity.CustomerModels;
 import com.coding.sales.input.OrderCommand;
+import com.coding.sales.input.PaymentCommand;
+import com.coding.sales.output.DiscountItemRepresentation;
 import com.coding.sales.output.OrderItemRepresentation;
 import com.coding.sales.output.OrderRepresentation;
+import com.coding.sales.output.PaymentRepresentation;
 import com.coding.sales.service.CustomerService;
 import com.coding.sales.service.MetalService;
 
+import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -40,22 +45,45 @@ public class OrderApp {
     }
 
     OrderRepresentation checkout(OrderCommand command) {
+        //TODO: 请完成需求指定的功能
+
         OrderRepresentation result = null;
         String orderId = command.getOrderId();
         Date createTime = String2Date(command.getCreateTime());
         CustomerService customerService = new CustomerService();
         CustomerModels oldCustomerModel = customerService.getOldCustomerModel(command.getMemberId());
         String memberNo = oldCustomerModel.getMemberNo();
+        String memberId = oldCustomerModel.getMemberId();
         String memberName = oldCustomerModel.getMemberName();
         String oldMemberType = oldCustomerModel.getMemberType();
-        //System.out.print(orderId+"..."+createTime+"..."+memberNo+"...."+memberName+"...."+oldMemberType);
         MetalService metalService = new MetalService();
         List<OrderItemRepresentation> items = metalService.getPayInfoList(command.getItems());
+        BigDecimal totalPrice = new BigDecimal(0);
         for(OrderItemRepresentation item : items){
-            System.out.print(item.getSubTotal()+"......");
+            totalPrice=totalPrice.add(item.getSubTotal());
         }
-
-        //TODO: 请完成需求指定的功能
+        BigDecimal totalDiscountPrice = new BigDecimal(0);
+        BigDecimal receivables = new BigDecimal(0);
+        List<DiscountItemRepresentation> discounts = new ArrayList<DiscountItemRepresentation>();
+        List<DiscountItemRepresentation> discountsList = metalService.getDiscountList(command.getItems(),command.getDiscounts());
+        for(DiscountItemRepresentation discount : discountsList){
+            totalDiscountPrice=totalDiscountPrice.add(discount.getDiscount());
+            receivables=receivables.add(discount.getActualPayment());
+            if (discount.getDiscount().compareTo(BigDecimal.valueOf(0.00))!=0){
+                discounts.add(discount);
+            }
+        }
+        CustomerModels newMemberModel = customerService.getNewCustomerModel(oldCustomerModel,receivables);
+        String newMemberType = newMemberModel.getMemberType();
+        Integer memberPoints = Integer.valueOf(newMemberModel.getMemberNo());
+        Integer memberPointsIncreased = Integer.valueOf(newMemberModel.getMemberNo())-Integer.valueOf(memberNo);
+        List<String> discountCards = command.getDiscounts();
+        List<PaymentRepresentation> payments = new ArrayList<PaymentRepresentation>();
+        for (PaymentCommand paymentCommand:command.getPayments()){
+            PaymentRepresentation paymentRepresentation = new PaymentRepresentation(paymentCommand.getType(),paymentCommand.getAmount());
+            payments.add(paymentRepresentation);
+        }
+        result=new OrderRepresentation(orderId,createTime,memberId,memberName,oldMemberType,newMemberType,memberPointsIncreased,memberPoints,items,totalPrice,discounts,totalDiscountPrice,receivables,payments,discountCards);
 
         return result;
     }

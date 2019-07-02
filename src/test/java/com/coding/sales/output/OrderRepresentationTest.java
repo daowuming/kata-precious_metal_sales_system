@@ -51,8 +51,8 @@ public class OrderRepresentationTest {
 
     private List<DiscountItemRepresentation> getDiscountItems() {
         return Arrays.asList(
-                new DiscountItemRepresentation("0001", "AAA", new BigDecimal(10.0)),
-                new DiscountItemRepresentation("0002", "BBB", new BigDecimal(10.0))
+                new DiscountItemRepresentation("0001", "AAA", new BigDecimal(10.0),new BigDecimal(10.0)),
+                new DiscountItemRepresentation("0002", "BBB", new BigDecimal(10.0),new BigDecimal(10.0))
         );
     }
 
