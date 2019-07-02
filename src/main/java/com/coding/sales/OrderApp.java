@@ -1,7 +1,9 @@
 package com.coding.sales;
 
+import com.coding.sales.enity.CustomerModels;
 import com.coding.sales.input.OrderCommand;
 import com.coding.sales.output.OrderRepresentation;
+import com.coding.sales.service.CustomerService;
 
 /**
  * 销售系统的主入口
@@ -32,6 +34,14 @@ public class OrderApp {
 
     OrderRepresentation checkout(OrderCommand command) {
         OrderRepresentation result = null;
+        String orderId = command.getOrderId();
+        CustomerService customerService = new CustomerService();
+        CustomerModels oldCustomerModel = customerService.getOldCustomerModel(command.getMemberId());
+        String memberNo = oldCustomerModel.getMemberNo();
+        String memberName = oldCustomerModel.getMemberName();
+        String oldMemberType = oldCustomerModel.getMemberType();
+        String newCustomerModel = customerService.getNewCustomerModel(oldCustomerModel,);
+        String newMemberType
 
         //TODO: 请完成需求指定的功能
 
