@@ -2,12 +2,15 @@ package com.coding.sales;
 
 import com.coding.sales.enity.CustomerModels;
 import com.coding.sales.input.OrderCommand;
+import com.coding.sales.output.OrderItemRepresentation;
 import com.coding.sales.output.OrderRepresentation;
 import com.coding.sales.service.CustomerService;
+import com.coding.sales.service.MetalService;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 
 /**
  * 销售系统的主入口
@@ -32,7 +35,7 @@ public class OrderApp {
     public String checkout(String orderCommand) {
         OrderCommand command = OrderCommand.from(orderCommand);
         OrderRepresentation result = checkout(command);
-        
+
         return result.toString();
     }
 
@@ -45,7 +48,12 @@ public class OrderApp {
         String memberNo = oldCustomerModel.getMemberNo();
         String memberName = oldCustomerModel.getMemberName();
         String oldMemberType = oldCustomerModel.getMemberType();
-        System.out.print(orderId+"..."+createTime+"..."+memberNo+"...."+memberName+"...."+oldMemberType);
+        //System.out.print(orderId+"..."+createTime+"..."+memberNo+"...."+memberName+"...."+oldMemberType);
+        MetalService metalService = new MetalService();
+        List<OrderItemRepresentation> items = metalService.getPayInfoList(command.getItems());
+        for(OrderItemRepresentation item : items){
+            System.out.print(item.getSubTotal()+"......");
+        }
 
         //TODO: 请完成需求指定的功能
 
