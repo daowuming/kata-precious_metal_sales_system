@@ -64,7 +64,7 @@ public class MetalService {
         metalModel4.setProductPrice(BigDecimal.valueOf(998.00));
         metalModel4.setUnit("套");
         metalModel4.setDiscountCards("");
-        metalModel4.setFullReduction(fullReduction2);
+        metalModel4.setFullReduction("three");
         metalList.add(metalModel4);
         MetalModels metalModel5 = new MetalModels();
         metalModel5.setProductNo("002003");
@@ -72,7 +72,7 @@ public class MetalService {
         metalModel5.setProductPrice(BigDecimal.valueOf(698.00));
         metalModel5.setUnit("套");
         metalModel5.setDiscountCards("nineDiscount");
-        metalModel5.setFullReduction(fullReduction3);
+        metalModel5.setFullReduction("two");
         metalList.add(metalModel5);
         MetalModels metalModel6 = new MetalModels();
         metalModel6.setProductNo("003001");
@@ -102,25 +102,43 @@ public class MetalService {
         MetalModels metal = getMetalInfo(productNo);
         BigDecimal money = metal.getProductPrice().multiply(BigDecimal.valueOf(amount));
         BigDecimal actualPayment = money;
+        BigDecimal actualPayment1 = money;
 
         if (diacountType.equals(metal.getDiscountCards())){
             actualPayment = money.multiply(BigDecimal.valueOf(discountMap.get(diacountType)));
         }
         if (metal.getFullReduction()!=null){
             Integer someThousands= money.divide(BigDecimal.valueOf(1000)).setScale( 0, BigDecimal.ROUND_DOWN ).intValue();
-            if (){
-
-            }
-            if (someThousands>=3){
-                actualPayment=money.subtract(BigDecimal.valueOf(350*(someThousands/3)));
-            }else if (someThousands>=2){
-                actualPayment=money.subtract(BigDecimal.valueOf(30*(someThousands/2)));
-            }else if (someThousands>=1){
-                actualPayment=money.subtract(BigDecimal.valueOf(10*someThousands));
+            if (metal.getFullReduction().equals("three")){
+                if (someThousands>=3){
+                    actualPayment=money.subtract(BigDecimal.valueOf(350*(someThousands/3)));
+                }else if (someThousands>=2){
+                    actualPayment=money.subtract(BigDecimal.valueOf(30*(someThousands/2)));
+                }else if (someThousands>=1){
+                    actualPayment=money.subtract(BigDecimal.valueOf(10*someThousands));
+                }
+            }else  if (metal.getFullReduction().equals("two")){
+                if (someThousands>=2){
+                    actualPayment=money.subtract(BigDecimal.valueOf(30*(someThousands/2)));
+                }else if (someThousands>=1){
+                    actualPayment=money.subtract(BigDecimal.valueOf(10*someThousands));
+                }
+            }else if (metal.getFullReduction().equals("one")){
+                if (someThousands>=1){
+                    actualPayment=money.subtract(BigDecimal.valueOf(10*someThousands));
+                }
             }
         }
+        actualPayment=getMinValue(actualPayment,actualPayment1);
         DiscountItemRepresentation discountItemRepresentation = new DiscountItemRepresentation(productNo,metal.getProductName(),actualPayment);
         return discountItemRepresentation;
+    }
+    public BigDecimal getMinValue (BigDecimal valuea,BigDecimal valueb){
+        if (valuea.compareTo(valueb)>=0){
+            return valueb;
+        }else {
+            return valuea;
+        }
     }
 
 }

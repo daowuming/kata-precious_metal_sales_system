@@ -9,7 +9,7 @@ public class MetalModels {
     String unit;
     BigDecimal productPrice;
     String discountCards;
-    List<FullReductionModels> fullReduction;
+   String fullReduction;
 
     public String getProductName() {
         return productName;
@@ -52,11 +52,11 @@ public class MetalModels {
         this.discountCards = discountCards;
     }
 
-    public List<FullReductionModels> getFullReduction() {
+    public String getFullReduction() {
         return fullReduction;
     }
 
-    public void setFullReduction(List<FullReductionModels> fullReduction) {
+    public void setFullReduction(String fullReduction) {
         this.fullReduction = fullReduction;
     }
 }

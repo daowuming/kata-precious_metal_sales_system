@@ -45,5 +45,14 @@ public class OrderAppTest {
         File file = new File(classLoader.getResource(fileName).getFile());
         return file.getAbsolutePath();
     }
+    @Test
+    public void aaa() {
+        String orderCommand = FileUtils.readFromFile(getResourceFilePath(commandFileName));
+        OrderApp app = new OrderApp();
+        String actualResult = app.checkout(orderCommand);
 
+        String expectedResult = FileUtils.readFromFile(getResourceFilePath(expectedResultFileName));
+
+        assertEquals(expectedResult, actualResult);
+    }
 }
