@@ -5,6 +5,10 @@ import com.coding.sales.input.OrderCommand;
 import com.coding.sales.output.OrderRepresentation;
 import com.coding.sales.service.CustomerService;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 /**
  * 销售系统的主入口
  * 用于打印销售凭证
@@ -35,16 +39,29 @@ public class OrderApp {
     OrderRepresentation checkout(OrderCommand command) {
         OrderRepresentation result = null;
         String orderId = command.getOrderId();
+        Date createTime = String2Date(command.getCreateTime());
         CustomerService customerService = new CustomerService();
         CustomerModels oldCustomerModel = customerService.getOldCustomerModel(command.getMemberId());
         String memberNo = oldCustomerModel.getMemberNo();
         String memberName = oldCustomerModel.getMemberName();
         String oldMemberType = oldCustomerModel.getMemberType();
-        String newCustomerModel = customerService.getNewCustomerModel(oldCustomerModel,);
-        String newMemberType
+        System.out.print(orderId+"..."+createTime+"..."+memberNo+"...."+memberName+"...."+oldMemberType);
 
         //TODO: 请完成需求指定的功能
 
         return result;
+    }
+
+    public Date String2Date(String dateString) {
+        Date nowDate = new Date();
+        if (dateString != null && !"".equals(dateString)) {
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            try {
+                return sdf.parse(dateString);
+            } catch (ParseException e) {
+                throw new RuntimeException("转换日期异常");
+            }
+        }
+        return nowDate;
     }
 }
