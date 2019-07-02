@@ -2,7 +2,10 @@ package com.coding.sales.service;
 
 import com.coding.sales.enity.FullReductionModels;
 import com.coding.sales.enity.MetalModels;
+import com.coding.sales.input.OrderItemCommand;
+import com.coding.sales.input.PaymentCommand;
 import com.coding.sales.output.DiscountItemRepresentation;
+import com.coding.sales.output.OrderItemRepresentation;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -98,15 +101,38 @@ public class MetalService {
         }
         return null;
     }
-    public DiscountItemRepresentation getPayMoney (String productNo,Integer amount,String diacountType) {
+    public  List<OrderItemRepresentation> getPayInfoList (List<OrderItemCommand> orderItemCommand){
+        List<OrderItemRepresentation> payInfoList= new ArrayList<OrderItemRepresentation>();
+        for (OrderItemCommand item:orderItemCommand){
+            OrderItemRepresentation payinfo=getPayInfo(item.getProduct(),item.getAmount());
+            payInfoList.add(payinfo);
+        }
+        return payInfoList;
+    }
+    public OrderItemRepresentation getPayInfo (String productNo,BigDecimal amount) {
         MetalModels metal = getMetalInfo(productNo);
-        BigDecimal money = metal.getProductPrice().multiply(BigDecimal.valueOf(amount));
+        BigDecimal money = metal.getProductPrice().multiply(amount);
+        OrderItemRepresentation orderItemRepresentation = new OrderItemRepresentation(productNo,metal.getProductName(),metal.getProductPrice(),amount,money);
+        return orderItemRepresentation;
+    }
+    public  List<DiscountItemRepresentation> getDiscountList (List<OrderItemCommand> orderItemCommand, ArrayList discount){
+        List<DiscountItemRepresentation> discountList= new ArrayList<DiscountItemRepresentation>();
+        for (OrderItemCommand item:orderItemCommand){
+            DiscountItemRepresentation discountInfo =getDiscount(item.getProduct(),item.getAmount(),discount.get(0).toString());
+            discountList.add(discountInfo);
+        }
+        return discountList;
+    }
+    public DiscountItemRepresentation getDiscount (String productNo,BigDecimal amount,String diacountType) {
+        MetalModels metal = getMetalInfo(productNo);
+        BigDecimal money = metal.getProductPrice().multiply(amount);
         BigDecimal actualPayment = money;
         BigDecimal actualPayment1 = money;
 
         if (diacountType.equals(metal.getDiscountCards())){
             actualPayment = money.multiply(BigDecimal.valueOf(discountMap.get(diacountType)));
         }
+        OrderItemRepresentation orderItemRepresentation = new OrderItemRepresentation(productNo,metal.getProductName(),metal.getProductPrice(),amount,actualPayment);
         if (metal.getFullReduction()!=null){
             Integer someThousands= money.divide(BigDecimal.valueOf(1000)).setScale( 0, BigDecimal.ROUND_DOWN ).intValue();
             if (metal.getFullReduction().equals("three")){
@@ -140,5 +166,4 @@ public class MetalService {
             return valuea;
         }
     }
-
 }

@@ -9,7 +9,7 @@ public class MetalModels {
     String unit;
     BigDecimal productPrice;
     String discountCards;
-   String fullReduction;
+    String fullReduction;
 
     public String getProductName() {
         return productName;
